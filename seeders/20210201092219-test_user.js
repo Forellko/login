@@ -1,7 +1,15 @@
-'use strict';
+'use strict'
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
+    await queryInterface.bulkInsert('Users', [
+      {
+        email: 'admin@',
+        password: 'admin',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    ])
     /**
      * Add seed commands here.
      *
@@ -10,7 +18,7 @@ module.exports = {
      *   name: 'John Doe',
      *   isBetaMember: false
      * }], {});
-    */
+     */
   },
 
   down: async (queryInterface, Sequelize) => {
@@ -20,5 +28,5 @@ module.exports = {
      * Example:
      * await queryInterface.bulkDelete('People', null, {});
      */
-  }
-};
+  },
+}
