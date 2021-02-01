@@ -13,11 +13,7 @@
   </head>
   <body>
     <div class="container">
-      <form
-        action="http://localhost:3000/login"
-        method="POST"
-        enctype="application/text/plain"
-      >
+      <form action="/login" method="POST" enctype="application/text/plain">
         <div class="mb-3">
           <label for="exampleInputEmail1" class="form-label"
             >Email address</label
@@ -27,6 +23,7 @@
             class="form-control"
             id="exampleInputEmail1"
             aria-describedby="emailHelp"
+            name="email"
           />
           <div id="emailHelp" class="form-text">
             We'll never share your email with anyone else.
@@ -39,6 +36,7 @@
             class="form-control"
             id="exampleInputPassword1"
             value="10"
+            name="password"
           />
         </div>
         <div class="mb-3 form-check">

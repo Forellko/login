@@ -6,6 +6,7 @@ const login_router = require('./routes/login_router')
 const app = express()
 
 app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({ extended: false }))
 app.set('view engine', 'ejs')
 app.use('/login', login_router)
 
