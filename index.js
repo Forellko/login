@@ -1,3 +1,4 @@
+const { sequelize } = require('./models/index')
 const express = require('express')
 const bodyParser = require('body-parser')
 const axios = require('axios')
@@ -14,6 +15,14 @@ const PORT = 3000
 app.listen(PORT, () => {
   console.log('port: ', PORT)
 })
+
+try {
+  sequelize
+    .authenticate()
+    .then(console.log('Connection has been established successfully.'))
+} catch (error) {
+  console.error('Unable to connect to the database:', error)
+}
 
 // axios
 //   .get('http://localhost:3000/login')
