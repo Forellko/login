@@ -13,7 +13,7 @@
   </head>
   <body>
     <div class="container">
-      <form action="/login" method="POST" enctype="application/text/plain">
+      <form id="form-login">
         <div class="mb-3">
           <label for="exampleInputEmail1" class="form-label"
             >Email address</label
@@ -38,12 +38,6 @@
             name="password"
           />
         </div>
-        <div class="mb-3 form-check">
-          <input type="checkbox" class="form-check-input" id="exampleCheck1" />
-          <label class="form-check-label" for="exampleCheck1"
-            >Check me out</label
-          >
-        </div>
         <input
           class="btn btn-success"
           type="submit"
@@ -58,5 +52,12 @@
         />
       </form>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script
+      type="text/javascript"
+      src="../node_modules/validator/validator.min.js"
+    ></script>
+
+    <script src="/valid_front.js"></script>
   </body>
 </html>

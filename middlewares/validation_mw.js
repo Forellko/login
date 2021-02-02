@@ -1,30 +1,39 @@
 const { User } = require('../models')
 const db = require('../models/index')
 const validator = require('validator')
+const jwt = require('jsonwebtoken')
 // const QI = db.sequelize.getQueryInterface()
 
 const validationLogin = async (req, res, next) => {
-  if (validator.isEmail(req.body.email)) {
-    next()
-    return
+  if (!validator.isEmail(req.body.email)) {
+    return res.status(400).json()
   }
+
+  const { email, password, isSignIn } = req.body
+
   const result = await User.findAll()
   const emailsAndPasswords = result.map((elm) => {
     return {
       email: elm.dataValues.email,
       password: elm.dataValues.password,
+      id: elm.dataValues.id,
     }
   })
   let accountExist = emailsAndPasswords.some(
-    (elm) => req.body.email === elm.email && req.body.password === elm.password
+    (elm) => email === elm.email && password === elm.password
   )
 
   // if (req.body.log_in) {
   // }
+  // console.log(email)
+  // console.log(password)
 
-  console.log(accountExist)
-  console.log(req.body)
-  if (req.body.sign_in && !accountExist) {
+  // const token = jwt.sign({ foo: email }, 'shhh')
+  // console.log(token)
+  // const resultToken = jwt.verify(token, 'shhh')
+  // console.log(resultToken)
+
+  if (isSignIn && !accountExist) {
     User.create({
       email: req.body.email,
       password: req.body.password,
@@ -34,7 +43,7 @@ const validationLogin = async (req, res, next) => {
     accountExist = true
   }
 
-  req.ok = accountExist
+  req.accountExist = accountExist
   next()
 }
 
