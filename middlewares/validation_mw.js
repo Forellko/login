@@ -9,22 +9,42 @@ const validationLogin = async (req, res, next) => {
     return res.status(400).json()
   }
 
-  const { email, password, isSignIn } = req.body
+  // const testJWT = jwt.sign({ data: 5 }, 'secret', {
+  //   expiresIn: 5,
+  // })
+
+  // setTimeout(() => {
+  //   console.log(jwt.verify(testJWT, 'secret'))
+  // }, 1000)
+
+  // setTimeout(() => {
+  //   console.log(jwt.verify(testJWT, 'secret'))
+  // }, 6000)
+
+  const { email, password, isSignIn, token } = req.body
 
   const result = await User.findAll()
-  const emailsAndPasswords = result.map((elm) => {
+  const usersDataBase = result.map((elm) => {
     return {
       email: elm.dataValues.email,
       password: elm.dataValues.password,
       id: elm.dataValues.id,
+      token: elm.dataValues.token,
     }
   })
-  let accountExist = emailsAndPasswords.some(
+
+  let accountExist = usersDataBase.some(
     (elm) => email === elm.email && password === elm.password
   )
 
-  // if (req.body.log_in) {
-  // }
+  if (!isSignIn && accountExist) {
+    const currentUser = usersDataBase.find((user) => user.email === email)
+    try {
+      jwt.verify(currentUser.token)
+      req.token = currentUser.token
+    } catch (error) {}
+  }
+
   // console.log(email)
   // console.log(password)
 
@@ -34,11 +54,20 @@ const validationLogin = async (req, res, next) => {
   // console.log(resultToken)
 
   if (isSignIn && !accountExist) {
+    const emailExist = usersDataBase.some((user) => user.email === email)
+    if (emailExist) {
+      return res.status(300).json()
+    }
+    const date = new Date()
+    console.log(date.getTime().toString())
+    const token = await jwt.sign({ email }, date.getTime().toString(), 10)
+    req.token = token
     User.create({
-      email: req.body.email,
-      password: req.body.password,
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      email: email,
+      password: password,
+      createdAt: date,
+      updatedAt: date,
+      token: token,
     })
     accountExist = true
   }
