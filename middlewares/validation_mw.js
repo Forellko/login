@@ -42,7 +42,9 @@ const validationLogin = async (req, res, next) => {
     try {
       jwt.verify(currentUser.token)
       req.token = currentUser.token
-    } catch (error) {}
+    } catch (error) {
+      log(error.message)
+    }
   }
 
   // console.log(email)

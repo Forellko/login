@@ -1,4 +1,18 @@
 // не подключается валидатор
+const start = async (e) => {
+  await axios
+    .post('http://localhost:3000/auth', {
+      token: localStorage.getItem('token'),
+    })
+    .then((res) => {
+      console.log(1)
+      if (res.isAcess) {
+        location.href = 'http://localhost:3000/profile'
+      }
+    })
+}
+
+start()
 
 document.getElementById('form-login').onsubmit = async (e) => {
   e.preventDefault()
