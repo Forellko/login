@@ -7,7 +7,11 @@ const onGetLogin = async (req, res) => {
 }
 
 const onPostLogin = (req, res) => {
-  res.status(200).json({ accountExist: req.accountExist, token: req.token })
+  res.status(200).json({
+    accountExist: req.accountExist,
+    token: req.token,
+    refreshToken: req.refreshToken,
+  })
 }
 
 module.exports = { onGetLogin, onPostLogin }

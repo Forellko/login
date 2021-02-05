@@ -2,26 +2,13 @@ const { User } = require('../models')
 const db = require('../models/index')
 const validator = require('validator')
 const jwt = require('jsonwebtoken')
-// const QI = db.sequelize.getQueryInterface()
 
 const validationLogin = async (req, res, next) => {
   if (!validator.isEmail(req.body.email)) {
     return res.status(400).json()
   }
 
-  // const testJWT = jwt.sign({ data: 5 }, 'secret', {
-  //   expiresIn: 5,
-  // })
-
-  // setTimeout(() => {
-  //   console.log(jwt.verify(testJWT, 'secret'))
-  // }, 1000)
-
-  // setTimeout(() => {
-  //   console.log(jwt.verify(testJWT, 'secret'))
-  // }, 6000)
-
-  const { email, password, isSignIn, token } = req.body
+  const { email, password, isSignIn } = req.body
 
   const result = await User.findAll()
   const usersDataBase = result.map((elm) => {
@@ -30,6 +17,7 @@ const validationLogin = async (req, res, next) => {
       password: elm.dataValues.password,
       id: elm.dataValues.id,
       token: elm.dataValues.token,
+      createdAt: elm.dataValues.createdAt,
     }
   })
 
@@ -40,20 +28,37 @@ const validationLogin = async (req, res, next) => {
   if (!isSignIn && accountExist) {
     const currentUser = usersDataBase.find((user) => user.email === email)
     try {
-      jwt.verify(currentUser.token)
-      req.token = currentUser.token
+      const loginToken = jwt.sign(
+        { email },
+        currentUser.createdAt.getTime().toString(),
+        {
+          expiresIn: 10,
+        }
+      )
+      const loginRefreshToken = jwt.sign(
+        { email },
+        currentUser.createdAt.getTime().toString(),
+        {
+          expiresIn: 500,
+        }
+      )
+      User.update(
+        {
+          token: loginToken,
+          tokenRefresh: loginRefreshToken,
+        },
+        {
+          where: {
+            email: email,
+          },
+        }
+      )
+      req.token = loginToken
+      req.refreshToken = loginRefreshToken
     } catch (error) {
-      log(error.message)
+      console.log(error.message)
     }
   }
-
-  // console.log(email)
-  // console.log(password)
-
-  // const token = jwt.sign({ foo: email }, 'shhh')
-  // console.log(token)
-  // const resultToken = jwt.verify(token, 'shhh')
-  // console.log(resultToken)
 
   if (isSignIn && !accountExist) {
     const emailExist = usersDataBase.some((user) => user.email === email)
@@ -61,15 +66,21 @@ const validationLogin = async (req, res, next) => {
       return res.status(300).json()
     }
     const date = new Date()
-    console.log(date.getTime().toString())
-    const token = await jwt.sign({ email }, date.getTime().toString(), 10)
+    const token = await jwt.sign({ email }, date.getTime().toString(), {
+      expiresIn: 10,
+    })
+    const refreshToken = await jwt.sign({ email }, date.getTime().toString(), {
+      expiresIn: 500,
+    })
     req.token = token
+    req.refreshToken = refreshToken
     User.create({
       email: email,
       password: password,
       createdAt: date,
       updatedAt: date,
       token: token,
+      refreshToken: refreshToken,
     })
     accountExist = true
   }

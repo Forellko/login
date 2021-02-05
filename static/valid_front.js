@@ -5,11 +5,11 @@ const start = async (e) => {
       token: localStorage.getItem('token'),
     })
     .then((res) => {
-      console.log(1)
-      if (res.isAcess) {
+      if (res.data.isAccess) {
         location.href = 'http://localhost:3000/profile'
       }
     })
+    .catch((err) => console.log(err.message))
 }
 
 start()
@@ -31,11 +31,11 @@ document.getElementById('form-login').onsubmit = async (e) => {
       email: inputs[0],
       password: inputs[1],
       isSignIn,
-      token: localStorage.getItem('token'),
     })
     .then((res) => {
       if (res.data.accountExist) {
         localStorage.setItem('token', res.data.token)
+        localStorage.setItem('refreshToken', res.data.refreshToken)
         location.href = 'http://localhost:3000/profile'
       }
     })
